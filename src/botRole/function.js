@@ -1,24 +1,41 @@
 var MongoClient = require("mongodb").MongoClient;
 var url = "mongodb://localhost:27017/";
+
+const client = new MongoClient(url);
+client.connect();
+const database = client.db("LineAppDBintro");
 //Save the results of lottery draws
 const saveHistory = () => {};
 
 //Manage the balance
 const manageBalance = (param) => {
+  var myobj = { userID: param.userID };
   if (param.result == "Win") {
-    MongoClient.connect(url, function (err, db) {
-      if (err) throw err;
-      var dbo = db.db("LineAppDB");
-      var myobj = { userID: param.userID };
-      dbo.collection("UserTable").find(myobj).updateOne(
+    database
+      .collection("UserTable")
+      .find(myobj)
+      .updateOne(
         { userID: param.userID },
         {
-          userID: param.userID,
-          betAmount: param.Amount,
+          $inc: {
+            userID: param.userID,
+            betAmount: param.Amount,
+          },
         }
       );
-    });
   } else {
+    database
+      .collection("UserTable")
+      .find(myobj)
+      .updateOne(
+        { userID: param.userID },
+        {
+          $inc: {
+            userID: param.userID,
+            betAmount: -param.Amount,
+          },
+        }
+      );
   }
 };
 
@@ -42,18 +59,14 @@ const createRandomDice = async () => {
 
   let betInform = {};
 
-  await MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    var dbo = db.db("LineAppDB");
-    dbo
-      .collection("BetTable")
-      .find({})
-      .toArray(function (err, result) {
-        betInform = result;
-        if (err) throw err;
-        db.close();
-      });
-  });
+  database
+    .collection("BetTable")
+    .find({})
+    .toArray(function (err, result) {
+      betInform = result;
+      if (err) throw err;
+      client.close();
+    });
 
   betInform.map((element, index) => {
     var sum = 0;
@@ -76,19 +89,15 @@ const createRandomDice = async () => {
         result = "Lose";
       }
 
-      MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db("LineAppDB");
-        dbo.collection("BetTable").updateOne(
-          { userID: element.userID },
-          {
-            betType: element.text,
-            betAmount: Amount,
-            betResult: result,
-            userID: element.userID,
-          }
-        );
-      });
+      database.collection("BetTable").updateOne(
+        { userID: element.userID },
+        {
+          betType: element.text,
+          betAmount: Amount,
+          betResult: result,
+          userID: element.userID,
+        }
+      );
     }
 
     if (element.type == "small") {
@@ -101,19 +110,15 @@ const createRandomDice = async () => {
       } else {
         result = "Lose";
       }
-      MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db("LineAppDB");
-        dbo.collection("BetTable").updateOne(
-          { userID: element.userID },
-          {
-            betType: element.text,
-            betAmount: Amount,
-            betResult: result,
-            userID: element.userID,
-          }
-        );
-      });
+      dbo.collection("BetTable").updateOne(
+        { userID: element.userID },
+        {
+          betType: element.text,
+          betAmount: Amount,
+          betResult: result,
+          userID: element.userID,
+        }
+      );
     }
 
     if (element.type == "odds") {
@@ -126,19 +131,15 @@ const createRandomDice = async () => {
       } else {
         result = "Lose";
       }
-      MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db("LineAppDB");
-        dbo.collection("BetTable").updateOne(
-          { userID: element.userID },
-          {
-            betType: element.text,
-            betAmount: Amount,
-            betResult: result,
-            userID: element.userID,
-          }
-        );
-      });
+      database.collection("BetTable").updateOne(
+        { userID: element.userID },
+        {
+          betType: element.text,
+          betAmount: Amount,
+          betResult: result,
+          userID: element.userID,
+        }
+      );
     }
 
     if (element.type == "even") {
@@ -151,19 +152,15 @@ const createRandomDice = async () => {
       } else {
         result = "Lose";
       }
-      MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db("LineAppDB");
-        dbo.collection("BetTable").updateOne(
-          { userID: element.userID },
-          {
-            betType: element.text,
-            betAmount: Amount,
-            betResult: result,
-            userID: element.userID,
-          }
-        );
-      });
+      database.collection("BetTable").updateOne(
+        { userID: element.userID },
+        {
+          betType: element.text,
+          betAmount: Amount,
+          betResult: result,
+          userID: element.userID,
+        }
+      );
     }
 
     if (element.type == "single") {
@@ -176,19 +173,15 @@ const createRandomDice = async () => {
       } else {
         result = "Lost";
       }
-      MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db("LineAppDB");
-        dbo.collection("BetTable").updateOne(
-          { userID: element.userID },
-          {
-            betType: element.text,
-            betAmount: Amount,
-            betResult: result,
-            userID: element.userID,
-          }
-        );
-      });
+      database.collection("BetTable").updateOne(
+        { userID: element.userID },
+        {
+          betType: element.text,
+          betAmount: Amount,
+          betResult: result,
+          userID: element.userID,
+        }
+      );
     }
 
     if (element.type == "double") {
@@ -204,19 +197,15 @@ const createRandomDice = async () => {
         result = "Lose";
       }
 
-      MongoClient.connect(url, function (err, db) {
-        if (err) throw err;
-        var dbo = db.db("LineAppDB");
-        dbo.collection("BetTable").updateOne(
-          { userID: element.userID },
-          {
-            betType: element.text,
-            betAmount: Amount,
-            betResult: result,
-            userID: element.userID,
-          }
-        );
-      });
+      database.collection("BetTable").updateOne(
+        { userID: element.userID },
+        {
+          betType: element.text,
+          betAmount: Amount,
+          betResult: result,
+          userID: element.userID,
+        }
+      );
     }
   });
 

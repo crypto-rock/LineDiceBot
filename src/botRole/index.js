@@ -1,7 +1,7 @@
 const https = require("https");
 const express = require("express");
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 80;
 const TOKEN = process.env.channelAccessToken;
 const cmdParse = require("../cmdPaser/paser");
 const cmd = require("./cmd");
@@ -10,7 +10,17 @@ const middleware = require("@line/bot-sdk").middleware;
 
 var MongoClient = require("mongodb").MongoClient;
 var url = "mongodb://localhost:27017/";
+
+const client = new MongoClient(url);
+client.connect();
+const database = client.db("LineAppDBintro");
 var betFlag = false;
+
+// database.collection("FlagTable").findOne({}, function (err, result) {
+//   if (err) throw err;
+//   betFlag = result.Flag;
+//   client.close();
+// });
 
 /*
 const config = {
@@ -44,49 +54,26 @@ app.post("/webhook", function (req, res) {
     req.body.events[0].message.type === "text" &&
     req.body.events[0].message.text == "/start"
   ) {
-    MongoClient.connect(url, function (err, db) {
+    var myobj = { Flag: true };
+    database.collection("FlagTable").insertOne(myobj, function (err, res) {
       if (err) throw err;
-      var dbo = db.db("LineAppDB");
-      var myobj = { Flag: true };
-      dbo.collection("FlagTable").insertOne(myobj, function (err, res) {
-        if (err) throw err;
-        db.close();
-      });
+      client.close();
     });
-  }
-  if (
+  } else if (
     req.body.events[0].message.type === "text" &&
     req.body.events[0].message.text == "/end"
   ) {
-    MongoClient.connect(url, function (err, db) {
+    var myobj = { Flag: false };
+    database.collection("FlagTable").insertOne(myobj, function (err, res) {
       if (err) throw err;
-      var dbo = db.db("LineAppDB");
-      var myobj = { Flag: false };
-      dbo.collection("FlagTable").insertOne(myobj, function (err, res) {
-        if (err) throw err;
-        db.close();
-      });
+      client.close();
     });
-  }
-
-  if (
+  } else if (
     req.body.events[0].message.type === "text" &&
     req.body.events[0].message.text == "/throw"
   ) {
     _function.createRandomDice();
-  }
-
-  MongoClient.connect(url, function (err, db) {
-    if (err) throw err;
-    var dbo = db.db("LineAppDB");
-    dbo.collection("FlagTable").findOne({ Flag }, function (err, result) {
-      if (err) throw err;
-      betFlag = result.Flag;
-      db.close();
-    });
-  });
-
-  if (
+  } else if (
     req.body.events[0].type === "message" &&
     req.body.events[0].message.type === "text" &&
     betFlag == true
@@ -136,9 +123,9 @@ app.post("/webhook", function (req, res) {
         }
       }
     }
-  }
-
-  if (req.body.events[0].type === "memberJoined") {
+  } else if (req.body.events[0].type === "memberJoined") {
+  } else {
+    return;
   }
 });
 

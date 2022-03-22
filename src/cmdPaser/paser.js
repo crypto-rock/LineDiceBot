@@ -1,4 +1,5 @@
-const split = (cmd) => {
+const _split = (cmd) => {
+  var split = "";
   if (cmd.includes("/") || cmd.includes("=")) {
     if (cmd.includes("/")) split = cmd.split("/");
     if (cmd.includes("=")) split = cmd.split("=");
@@ -9,13 +10,14 @@ const split = (cmd) => {
       split[1].includes("=")
     ) {
       return false;
-    } else split;
+    } else return split;
   }
 };
 
 const parser = (cmd) => {
   if (cmd) {
-    var split = split(cmd);
+    var split = _split(cmd);
+
     var len = split.length;
     try {
       if (split[0] === "") {
