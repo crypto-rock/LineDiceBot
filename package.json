@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon ./src/botRole",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node ./node_modules/mocha/bin/mocha"
   },
   "keywords": [],
   "author": "",
@@ -12,6 +12,7 @@
   "dependencies": {
     "@line/bot-sdk": "^7.4.0",
     "bluebird": "~3.5.0",
+    "chai-http": "^4.3.0",
     "colors": "^1.4.0",
     "crypto": "~0.0.3",
     "dotenv": "^10.0.0",
@@ -21,9 +22,13 @@
     "mongodb": "^4.4.1",
     "mysql": "^2.18.1",
     "nodemon": "^2.0.15",
-    "request": "^2.88.2",
     "request-promise": "~4.2.2",
     "slugify": "^1.5.3"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^9.2.2",
+    "request": "^2.88.2"
+  }
 }

@@ -3,7 +3,7 @@ var url = "mongodb://localhost:27017/";
 
 const client = new MongoClient(url);
 client.connect();
-const database = client.db("LineAppDBintro");
+const database = client.db("LineAppDB");
 
 //Cancel the bet
 const cmdX = (param) => {
@@ -15,7 +15,6 @@ const cmdX = (param) => {
 const cmdC = () => {
   var balance = 0;
   balance = db.bios.findOne([]);
-  db.close();
   return balance;
 };
 
@@ -36,10 +35,9 @@ const cmdN = () => {};
 
 //LargeBet
 const cmdBet = async (param) => {
-  var Amount = param.betType.includes("/")
-    ? param.betType.split("/")[1]
-    : param.betType.split("=")[1];
-  if (err) throw err;
+  var Amount = param.text.includes("/")
+    ? param.text.split("/")[1]
+    : param.text.split("=")[1];
   var myobj = {
     betType: param.text,
     betAmount: Amount,
@@ -47,10 +45,14 @@ const cmdBet = async (param) => {
     userID: param.userID,
   };
 
-  database.collection("BetTable").insertOne(myobj, function (err, res) {
-    if (err) throw err;
-    client.close();
-  });
+  var serachData = await database
+    .collection("BetTable")
+    .findOne({ userID: param.userID });
+
+  if (serachData == null) database.collection("BetTable").insertOne(myobj);
+  else {
+    return;
+  }
 };
 
 module.exports = {
