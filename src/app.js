@@ -37,15 +37,6 @@ app.post("/webhook", middleware(config), (req, res) => {
 });
 */
 
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.get("/", (req, res) => {
-	// if (cmdParse.parser(JSON.parse(req.body.events).line) !== false) {
-	// console.log(cmdParse.parser(JSON.parse(req.body.events).line));
-	res.send("OK");
-	// }
-});
 
 app.post("/webhook", async (req, res)=>{
 	try {
@@ -130,6 +121,17 @@ app.post("/webhook", async (req, res)=>{
 		
 	}
 
+});
+
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+app.get("/", (req, res) => {
+	// if (cmdParse.parser(JSON.parse(req.body.events).line) !== false) {
+	// console.log(cmdParse.parser(JSON.parse(req.body.events).line));
+	res.send("OK");
+	// }
 });
 
 app.listen(PORT, () => {
