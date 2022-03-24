@@ -1,9 +1,9 @@
 {
   "name": "lineapp",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/app.js",
   "scripts": {
-    "start": "nodemon ./src/botRole",
+    "start": "nodemon ./src/app",
     "test": "node ./node_modules/mocha/bin/mocha"
   },
   "keywords": [],
