@@ -204,6 +204,7 @@ const createRandomDice = async () => {
         }
       );
     }
+
     var fectData = {
       result: result,
       userID: element.userID,
