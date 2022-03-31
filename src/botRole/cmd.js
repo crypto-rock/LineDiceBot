@@ -2,6 +2,8 @@ var BetTable = require("../model/BetSchema");
 var FlagTable = require("../model/FlagSchema");
 var UserTable = require("../model/UserSchema");
 
+const cmd = () => {};
+
 const isAdmin = (userid) => {
   return userid === "U1525cfda31a82e8d870f227fccfd3a43";
 };
@@ -27,10 +29,12 @@ const cmdA = () => {
   var rule = `1 single type: 
   Small: 
     The total points are 4-10 (Leopard Banker takes all) 
-  Big: 11-17 total points (Leopard Banker takes all) 
-  Single: The total number of points is 5.7.9.11.13.15.17 points 
-  Double: 4.6.8.10.12.14.16 points total Multiple: 
-2 times 
+  Big: 
+    11-17 total points (Leopard Banker takes all) 
+  Single: 
+    The total number of points is 5.7.9.11.13.15.17 points 
+  Double: 
+    4.6.8.10.12.14.16 points total Multiple: 2 times 
 2.Duplex Big single, big double, small single, small double, digital size, digital single and double. 
   Odds: 3.3x
 3 Double digits 1/2 3/1 Odds: 6x 4. 
@@ -46,18 +50,27 @@ const cmdB = async (param) => {
     if (exiting) await BetTable.deleteOne(myobj);
   }
   var data = await UserTable.findOne(myobj);
-  if (data) return data.balance;
+  if (data) return data.Balance;
 };
 
 //Enter the lottery result, the robot will display the picture
 const cmdS = async (param) => {
+  console.log(param);
   var Amount = param.text.includes("/")
     ? param.text.split("/")[1]
     : param.text.split("=")[1];
+  console.log(Amount);
   var result = await BetTable.find({
-    $and: [{ UserID: param.userID }, { betPayoff: parseInt(Amount) }],
+    $and: [{ UserID: param.userID }, { betPayoff: Amount }],
   });
-  return result.betDice;
+  console.log(result);
+  var sendStr = "";
+  if (result[0]) {
+    result.betDice.foreach((e) => {
+      sendStr += "   " + e;
+    });
+    return sendStr;
+  }
 };
 
 //Bank account number
@@ -81,15 +94,16 @@ const cmdY = async (param) => {
       }
     );
   }
+  return bankNum;
 };
 
 //Past lottery records
 const cmdN = async (param) => {
   var len = await BetTable.findOne().sort("-betID");
   var data = await BetTable.find();
-  var result = [];
+  var result = "";
   for (var i = len; i >= len - 10; i--) {
-    result.push(data[i]);
+    result += data[i] + "/n";
   }
   return result;
 };
@@ -116,8 +130,10 @@ const cmdBet = async (param) => {
 
   var serachUser = await BetTable.findOne({ UserID: param.userID });
 
-  if (serachUser == null) myobj.save();
-  else {
+  if (serachUser == null) {
+    myobj.save();
+    return;
+  } else {
     return;
   }
 };

@@ -6,6 +6,9 @@ const _split = (cmd) => {
 
     if (split[1].split(" ")[1] != "" && split[1].split(" ")[0] == "Y") {
       return split;
+
+      if (split[1].split(" ")[1] != "" && split[1].split(" ")[0] == "Y") {
+        return split;
     } else if (
       (split.length != 2 &&
         split[1].length != parseInt(split[1]).toString().length) ||
@@ -25,6 +28,8 @@ const parser = (cmd) => {
       try {
         if (split[0] === "") {
           if (split[len - 1].split(" ")[0] == "Y" && split[len - 1][1])
+            return "normal";
+          if (split[len - 1].split(" ")[0] == "S" && split[len - 1][1])
             return "normal";
           switch (split[len - 1]) {
             case "X":

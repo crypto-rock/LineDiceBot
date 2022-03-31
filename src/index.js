@@ -81,6 +81,7 @@ const handleWebHook = async (event, source, message) => {
         } else {
           await FlagTable.updateOne({ Flag: false }, { $set: { Flag: true } });
         }
+        sendMessage(event.replyToken, "Betting Started");
       } else if (message.text == "/end" && isAdmin(source.userId)) {
         await FlagTable.updateOne(
           { Flag: true },
@@ -88,6 +89,7 @@ const handleWebHook = async (event, source, message) => {
             $set: { Flag: false },
           }
         );
+        sendMessage(event.replyToken, "End betting");
       } else if (message.text == "/throw" && isAdmin(source.userId)) {
         _function.createRandomDice();
       } else if (event.type === "message" && betFlag == true) {
@@ -106,32 +108,75 @@ const handleWebHook = async (event, source, message) => {
             flag == "single" ||
             flag == "double"
           ) {
+            sendMessage(
+              event.replyToken,
+              event.source.userId + "User Bets with " + message.text
+            );
             cmd.cmdBet(param);
           }
 
           if (flag == "normal") {
-            if (message.text.includes("/Y")) cmd.cmdY(param);
             var result = "";
+            if (message.text.includes("/Y")) {
+              result = cmd.cmdY(param);
+              sendMessage(
+                event.replyToken,
+                event.source.userId + "User was set Bank account to " + result
+              );
+            }
+
+            if (message.text.includes("/S")) {
+              result = cmd.cmdS(message.text[" "][1]);
+              sendMessage(
+                event.replyToken,
+                event.source.userId + "User was set Bank account to " + result
+              );
+            }
+
             switch (message.text) {
               case "/X":
-                result = cmd.cmdX(param);
+                cmd.cmdX(param);
+                sendMessage(
+                  event.replyToken,
+                  event.source.userId + "user has canceled the bet."
+                );
+                break;
 
               case "/C":
-                result = cmd.cmdC(param);
+                var result = 0;
+                cmd.cmdC(param).then((res) => {
+                  result = res;
+                });
+                sendMessage(
+                  event.replyToken,
+                  event.source.userId + "user's balance is" + result
+                );
+                break;
 
               case "/A":
-                result = cmd.cmdA(param);
+                var result = cmd.cmdA(param);
+                sendMessage(event.replyToken, result);
+                break;
 
               case "/B":
-                result = cmd.cmdB(param);
-
-              case "/S":
-                result = cmd.cmdS(param);
+                cmd.cmdB(param).then((res) => {
+                  sendMessage(
+                    event.replyToken,
+                    event.source.userId +
+                      "user has canceled the bet and balance is " +
+                      res
+                  );
+                });
+                break;
 
               case "/N":
                 result = cmd.cmdN(param);
+                sendMessage(
+                  event.replyToken,
+                  event.source.userId + "user's bets history" + result
+                );
             }
-            // console.log(result);
+            console.log(result);
           }
         }
       } else if (event.type === "memberJoined") {
